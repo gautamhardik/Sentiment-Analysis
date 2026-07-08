@@ -1,3 +1,12 @@
+---
+title: Sentiment Analysis
+emoji: 🎬
+colorFrom: blue
+colorTo: purple
+sdk: docker
+pinned: false
+---
+
 # The Screening Room
 
 > **Three Critics. One Review. Three Perspectives.**
