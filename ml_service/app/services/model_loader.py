@@ -9,9 +9,10 @@ from app.config import settings
 os.environ["TF_USE_LEGACY_KERAS"] = "1"
 import tensorflow as tf
 try:
-    import tf_keras as keras
+    import tf_keras
 except ImportError:
-    import keras
+    tf_keras = None
+import keras as keras3
 
 warnings.filterwarnings("ignore")
 
@@ -108,18 +109,21 @@ class ModelManager:
                 loaded = False
                 last_lstm_error = ""
                 
-                if is_h5 or True:
-                    for loader_fn, name in [
-                        (lambda p: tf.keras.models.load_model(p, compile=False), "tf.keras"),
-                        (lambda p: keras.models.load_model(p, compile=False), "keras"),
-                    ]:
-                        try:
-                            self.lstm_model = loader_fn(model_path)
-                            loaded = True
-                            break
-                        except Exception as e:
-                            last_lstm_error = f"{name}: {str(e)}"
-                            continue
+                for loader_fn, name in [
+                    (lambda p: keras3.models.load_model(p), "keras3"),
+                    (lambda p: keras3.saving.load_model(p), "keras3_saving"),
+                    (lambda p: tf.keras.models.load_model(p, compile=False), "tf.keras"),
+                    (lambda p: tf_keras.models.load_model(p, compile=False), "tf_keras"),
+                ]:
+                    if name == "tf_keras" and tf_keras is None:
+                        continue
+                    try:
+                        self.lstm_model = loader_fn(model_path)
+                        loaded = True
+                        break
+                    except Exception as e:
+                        last_lstm_error = f"{name}: {str(e)}"
+                        continue
                 
                 if not loaded:
                     raise RuntimeError(f"Could not load LSTM model ({'h5' if is_h5 else 'zip'}): {last_lstm_error}")
