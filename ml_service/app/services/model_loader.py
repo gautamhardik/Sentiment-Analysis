@@ -3,9 +3,15 @@ import joblib
 import pickle
 import torch
 import warnings
-import tensorflow as tf
 from transformers import BertTokenizerFast, BertForSequenceClassification
 from app.config import settings
+
+os.environ["TF_USE_LEGACY_KERAS"] = "1"
+import tensorflow as tf
+try:
+    import tf_keras as keras
+except ImportError:
+    import keras
 
 warnings.filterwarnings("ignore")
 
@@ -53,22 +59,18 @@ class ModelManager:
         self.warmup_models()
         
     def warmup_models(self):
-        # Warmup to absorb initialization costs (like TF graph building)
         print("Warming up models...")
         try:
             if self.models_loaded["logistic_regression"]:
                 self.lr_model.predict(self.lr_vectorizer.transform(["warmup"]))
         except Exception as e: print(f"LR warmup failed: {e}")
-            
         try:
             if self.models_loaded["lstm"]:
                 seq = self.lstm_tokenizer.texts_to_sequences(["warmup text"])
-                # Note: Keras pad_sequences requires absolute import here to avoid circular dependencies
-                from keras.preprocessing.sequence import pad_sequences
+                from tensorflow.keras.preprocessing.sequence import pad_sequences
                 seq = pad_sequences(seq, maxlen=self.lstm_config.get("max_len", 300))
                 self.lstm_fast_predict(tf.convert_to_tensor(seq))
         except Exception as e: print(f"LSTM warmup failed: {e}")
-            
         try:
             if self.models_loaded["bert"]:
                 inputs = self.bert_tokenizer("warmup text", return_tensors="pt", truncation=True, padding=True, max_length=128)
@@ -96,7 +98,14 @@ class ModelManager:
             cfg_path = os.path.join(settings.DATA_DIR, "config.pkl")
             
             if os.path.exists(model_path) and os.path.exists(tok_path) and os.path.exists(cfg_path):
-                self.lstm_model = tf.keras.models.load_model(model_path)
+                for loader in [tf.keras.models.load_model, keras.models.load_model]:
+                    try:
+                        self.lstm_model = loader(model_path)
+                        break
+                    except Exception:
+                        continue
+                else:
+                    raise RuntimeError("Could not load LSTM model with any backend")
                 
                 @tf.function(reduce_retracing=True)
                 def fast_predict(x):

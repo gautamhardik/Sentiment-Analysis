@@ -29,34 +29,30 @@ async def predict(request: PredictRequest):
     pos_count = 0
     neg_count = 0
     total_count = 0
+    errors = []
     
-    try:
-        if "lr" in request.models:
-            lr_res = predict_lr(request.text)
-            models_result["lr"] = lr_res
+    def try_predict(model_key: str, predict_fn, text: str):
+        nonlocal pos_count, neg_count, total_count
+        try:
+            result = predict_fn(text)
+            models_result[model_key] = result
             total_count += 1
-            if lr_res.label == "Positive": pos_count += 1
-            else: neg_count += 1
-            
-        if "lstm" in request.models:
-            lstm_res = predict_lstm(request.text)
-            models_result["lstm"] = lstm_res
-            total_count += 1
-            if lstm_res.label == "Positive": pos_count += 1
-            else: neg_count += 1
-            
-        if "bert" in request.models:
-            bert_res = predict_bert(request.text)
-            models_result["bert"] = bert_res
-            total_count += 1
-            if bert_res.label == "Positive": pos_count += 1
-            else: neg_count += 1
-            
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+            if result.label == "Positive":
+                pos_count += 1
+            else:
+                neg_count += 1
+        except Exception as e:
+            errors.append(f"{model_key}: {str(e)}")
+    
+    if "lr" in request.models:
+        try_predict("lr", predict_lr, request.text)
+    if "lstm" in request.models:
+        try_predict("lstm", predict_lstm, request.text)
+    if "bert" in request.models:
+        try_predict("bert", predict_bert, request.text)
         
     if total_count == 0:
-        raise HTTPException(status_code=400, detail="No valid models selected or available")
+        raise HTTPException(status_code=503, detail=f"No models available: {'; '.join(errors)}")
         
     majority_label = "Positive" if pos_count >= neg_count else "Negative"
     agreement = f"{max(pos_count, neg_count)}/{total_count}"
