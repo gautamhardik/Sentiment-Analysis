@@ -85,8 +85,6 @@ class ModelManager:
             if os.path.exists(vec_path) and os.path.exists(model_path):
                 self.lr_vectorizer = joblib.load(vec_path)
                 self.lr_model = joblib.load(model_path)
-                if not hasattr(self.lr_model, 'multi_class'):
-                    self.lr_model.multi_class = 'ovr'
                 self.models_loaded["logistic_regression"] = True
         except Exception as e:
             print(f"Failed to load Logistic Regression: {e}")
