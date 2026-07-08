@@ -1168,6 +1168,186 @@ textarea:focus {
     opacity: 0.8;
 }
 
+/* ==========================================================================
+   FEATURED SCREENINGS
+   ========================================================================== */
+.featured-section {
+    max-width: 1000px;
+    margin: 0 auto 4rem auto;
+}
+
+.featured-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.featured-header h2 {
+    font-family: 'Playfair Display', serif;
+    color: var(--gold);
+    font-size: 2rem;
+    text-shadow: 0 0 10px var(--gold-glow);
+    margin-bottom: 0.5rem;
+}
+
+.featured-subtitle {
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 1rem;
+}
+
+.featured-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.review-card {
+    background-color: var(--ticket-bg);
+    color: var(--ticket-text);
+    border-radius: var(--border-radius);
+    position: relative;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: var(--transition);
+}
+
+.review-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+}
+
+.review-card::before,
+.review-card::after {
+    content: '';
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    background-color: var(--bg-dark);
+    border-radius: 50%;
+    top: 50px;
+    z-index: 1;
+}
+
+.review-card::before { left: -12px; }
+.review-card::after { right: -12px; }
+
+.review-card-top {
+    background-color: var(--gold);
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px dashed rgba(0,0,0,0.15);
+}
+
+.review-card-top .card-stub {
+    font-family: monospace;
+    font-weight: bold;
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+    border: 1.5px solid var(--ticket-text);
+    padding: 0.15rem 0.4rem;
+    transform: rotate(-3deg);
+    opacity: 0.7;
+}
+
+.review-card-body {
+    padding: 1rem 1.25rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.review-text {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    flex-grow: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.review-card-footer {
+    padding: 0.75rem 1.25rem 1rem;
+    border-top: 1px dashed rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.category-badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0.2rem 0.6rem;
+    border-radius: 10px;
+}
+
+.category-badge.positive {
+    background: rgba(74, 222, 128, 0.2);
+    color: #166534;
+}
+
+.category-badge.negative {
+    background: rgba(248, 113, 113, 0.2);
+    color: #991b1b;
+}
+
+.category-badge.mixed,
+.category-badge.complex {
+    background: rgba(251, 191, 36, 0.2);
+    color: #92400e;
+}
+
+.category-badge.sarcasm {
+    background: rgba(167, 139, 250, 0.2);
+    color: #5b21b6;
+}
+
+.category-badge.negation {
+    background: rgba(96, 165, 250, 0.2);
+    color: #1e40af;
+}
+
+.difficulty-badge {
+    font-size: 0.75rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 8px;
+    opacity: 0.8;
+}
+
+.use-btn {
+    margin-left: auto;
+    background: var(--ticket-text);
+    color: var(--ticket-bg);
+    border: none;
+    padding: 0.3rem 0.85rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: var(--transition);
+}
+
+.use-btn:hover {
+    background: var(--gold);
+    color: var(--ticket-text);
+    transform: scale(1.05);
+}
+
+.use-btn:active {
+    transform: scale(0.95);
+}
+
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }

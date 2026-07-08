@@ -74,6 +74,91 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Featured Screenings Data
+    const featuredReviews = [
+        {
+            text: "The film's cinematography was breathtaking and the performances were stellar, but the plot had more holes than a slice of Swiss cheese.",
+            category: "Mixed",
+            difficulty: "medium"
+        },
+        {
+            text: "I cannot recommend this movie enough. It was absolutely fantastic from start to finish!",
+            category: "Positive",
+            difficulty: "easy"
+        },
+        {
+            text: "This was hands down the worst movie I have ever seen. A complete waste of two hours.",
+            category: "Negative",
+            difficulty: "easy"
+        },
+        {
+            text: "Sure, because what the world really needed was another superhero reboot with a gritty, dark twist. Bravo, truly groundbreaking.",
+            category: "Sarcasm",
+            difficulty: "hard"
+        },
+        {
+            text: "The movie wasn't bad, but it wasn't good either. I can't say I disliked it, but I also can't say I liked it.",
+            category: "Negation",
+            difficulty: "medium"
+        },
+        {
+            text: "A masterpiece that somehow manages to be both profound and profoundly boring at the same time. I think I loved it? Or maybe I hated it?",
+            category: "Complex Context",
+            difficulty: "hard"
+        },
+        {
+            text: "The acting was phenomenal and the soundtrack was incredible. A truly unforgettable experience.",
+            category: "Positive",
+            difficulty: "easy"
+        },
+        {
+            text: "Predictable plot, wooden acting, and special effects that looked like they were from 1995. Skip this one.",
+            category: "Negative",
+            difficulty: "easy"
+        }
+    ];
+
+    const difficultyBadges = { easy: '🟢 Easy', medium: '🟡 Medium', hard: '🔴 Hard' };
+
+    function renderFeaturedCards() {
+        const grid = document.getElementById('featuredGrid');
+        grid.innerHTML = '';
+        featuredReviews.forEach((review, index) => {
+            const catClass = review.category.toLowerCase().replace(/\s+/g, '-');
+            const card = document.createElement('div');
+            card.className = 'review-card';
+            card.innerHTML = `
+                <div class="review-card-top">
+                    <span class="card-stub">SCREENING ${index + 1}</span>
+                </div>
+                <div class="review-card-body">
+                    <p class="review-text">${review.text}</p>
+                </div>
+                <div class="review-card-footer">
+                    <span class="category-badge ${catClass}">${review.category}</span>
+                    <span class="difficulty-badge">${difficultyBadges[review.difficulty]}</span>
+                    <button class="use-btn" data-index="${index}">Use This Review</button>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+
+        // Delegate click for "Use This Review" buttons
+        grid.addEventListener('click', (e) => {
+            const btn = e.target.closest('.use-btn');
+            if (!btn) return;
+            const idx = parseInt(btn.dataset.index, 10);
+            reviewInput.value = featuredReviews[idx].text;
+            reviewInput.focus();
+            resultsSection.classList.add('hidden');
+            errorMessage.textContent = '';
+            // Scroll to the input section
+            document.querySelector('.input-section').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+    }
+
+    renderFeaturedCards();
+
     function deduplicateKeywords(words) {
         if (!words) return [];
         const sorted = [...words].sort((a, b) => b.length - a.length);
