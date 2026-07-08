@@ -64,7 +64,13 @@ async def predict(request: PredictRequest):
         models=models_result,
         timing=TimingInfo(total_ms=total_ms),
         metadata=PredictMetadata(model_versions=MODEL_VERSIONS)
-    )
+    ) if not errors else {
+        "overall": OverallPrediction(label=majority_label, agreement=agreement).model_dump(),
+        "models": {k: v.model_dump() for k, v in models_result.items()},
+        "timing": TimingInfo(total_ms=total_ms).model_dump(),
+        "metadata": PredictMetadata(model_versions=MODEL_VERSIONS).model_dump(),
+        "errors": errors,
+    }
 
 @router.get("/health")
 async def health_check() -> Dict[str, Any]:
