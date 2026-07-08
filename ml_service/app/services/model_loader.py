@@ -98,13 +98,19 @@ class ModelManager:
             cfg_path = os.path.join(settings.DATA_DIR, "config.pkl")
             
             if os.path.exists(model_path) and os.path.exists(tok_path) and os.path.exists(cfg_path):
-                for loader in [tf.keras.models.load_model, keras.models.load_model]:
+                loaded = False
+                for loader_fn in [
+                    lambda p: tf.keras.models.load_model(p, compile=False),
+                    lambda p: keras.models.load_model(p, compile=False),
+                    lambda p: tf.saved_model.load(p),
+                ]:
                     try:
-                        self.lstm_model = loader(model_path)
+                        self.lstm_model = loader_fn(model_path)
+                        loaded = True
                         break
                     except Exception:
                         continue
-                else:
+                if not loaded:
                     raise RuntimeError("Could not load LSTM model with any backend")
                 
                 @tf.function(reduce_retracing=True)
