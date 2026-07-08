@@ -6,13 +6,8 @@ import warnings
 from transformers import BertTokenizerFast, BertForSequenceClassification
 from app.config import settings
 
-os.environ["TF_USE_LEGACY_KERAS"] = "1"
 import tensorflow as tf
-try:
-    import tf_keras
-except ImportError:
-    tf_keras = None
-import keras as keras3
+import keras
 
 warnings.filterwarnings("ignore")
 
@@ -69,7 +64,10 @@ class ModelManager:
         try:
             if self.models_loaded["lstm"]:
                 seq = self.lstm_tokenizer.texts_to_sequences(["warmup text"])
-                from tensorflow.keras.preprocessing.sequence import pad_sequences
+                try:
+                    from tensorflow.keras.preprocessing.sequence import pad_sequences
+                except ImportError:
+                    from keras.src.legacy.preprocessing.sequence import pad_sequences
                 seq = pad_sequences(seq, maxlen=self.lstm_config.get("max_len", 300))
                 self.lstm_fast_predict(tf.convert_to_tensor(seq))
         except Exception as e: print(f"LSTM warmup failed: {e}")
@@ -110,13 +108,9 @@ class ModelManager:
                 last_lstm_error = ""
                 
                 for loader_fn, name in [
-                    (lambda p: keras3.models.load_model(p), "keras3"),
-                    (lambda p: keras3.saving.load_model(p), "keras3_saving"),
+                    (lambda p: keras.models.load_model(p), "keras"),
                     (lambda p: tf.keras.models.load_model(p, compile=False), "tf.keras"),
-                    (lambda p: tf_keras.models.load_model(p, compile=False), "tf_keras"),
                 ]:
-                    if name == "tf_keras" and tf_keras is None:
-                        continue
                     try:
                         self.lstm_model = loader_fn(model_path)
                         loaded = True
