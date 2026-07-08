@@ -108,6 +108,7 @@ class ModelManager:
                 last_lstm_error = ""
                 
                 for loader_fn, name in [
+                    (lambda p: keras.saving.load_model(p), "keras_saving"),
                     (lambda p: keras.models.load_model(p), "keras"),
                     (lambda p: tf.keras.models.load_model(p, compile=False), "tf.keras"),
                 ]:
