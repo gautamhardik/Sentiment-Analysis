@@ -85,8 +85,15 @@ class ModelManager:
             vec_path = os.path.join(settings.MODELS_ML_DIR, "tfidf_vectorizer.pkl")
             model_path = os.path.join(settings.MODELS_ML_DIR, "sentiment_model.pkl")
             if os.path.exists(vec_path) and os.path.exists(model_path):
-                self.lr_vectorizer = joblib.load(vec_path)
-                self.lr_model = joblib.load(model_path)
+                import sklearn
+                if tuple(int(x) for x in sklearn.__version__.split(".")[:2]) >= (1, 4):
+                    self.lr_vectorizer = joblib.load(vec_path)
+                    self.lr_model = joblib.load(model_path)
+                    if not hasattr(self.lr_model, "multi_class"):
+                        self.lr_model.multi_class = "ovr"
+                else:
+                    self.lr_vectorizer = joblib.load(vec_path)
+                    self.lr_model = joblib.load(model_path)
                 self.models_loaded["logistic_regression"] = True
         except Exception as e:
             self.load_errors["lr"] = str(e)
