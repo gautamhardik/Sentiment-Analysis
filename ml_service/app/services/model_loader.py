@@ -100,24 +100,29 @@ class ModelManager:
             cfg_path = os.path.join(settings.DATA_DIR, "config.pkl")
             
             if os.path.exists(model_path) and os.path.exists(tok_path) and os.path.exists(cfg_path):
+                with open(model_path, "rb") as f:
+                    header = f.read(8)
+                    is_h5 = header[0:2] == b"\x89H"
+                    is_zip = header[0:2] == b"PK"
+                    
                 loaded = False
                 last_lstm_error = ""
-                for loader_fn, name in [
-                    (lambda p: tf.keras.models.load_model(p, compile=False), "tf.keras"),
-                    (lambda p: keras.models.load_model(p, compile=False), "keras"),
-                ]:
-                    try:
-                        print(f"Trying {name} to load LSTM...")
-                        self.lstm_model = loader_fn(model_path)
-                        loaded = True
-                        print(f"LSTM loaded with {name}")
-                        break
-                    except Exception as e:
-                        print(f"LSTM {name} failed: {e}")
-                        last_lstm_error = f"{name}: {str(e)}"
-                        continue
+                
+                if is_h5 or True:
+                    for loader_fn, name in [
+                        (lambda p: tf.keras.models.load_model(p, compile=False), "tf.keras"),
+                        (lambda p: keras.models.load_model(p, compile=False), "keras"),
+                    ]:
+                        try:
+                            self.lstm_model = loader_fn(model_path)
+                            loaded = True
+                            break
+                        except Exception as e:
+                            last_lstm_error = f"{name}: {str(e)}"
+                            continue
+                
                 if not loaded:
-                    raise RuntimeError(f"Could not load LSTM model: {last_lstm_error}")
+                    raise RuntimeError(f"Could not load LSTM model ({'h5' if is_h5 else 'zip'}): {last_lstm_error}")
                 if hasattr(self.lstm_model, "signatures") and "serving_default" in self.lstm_model.signatures:
                     self.lstm_fast_predict = self.lstm_model.signatures["serving_default"]
                 else:
