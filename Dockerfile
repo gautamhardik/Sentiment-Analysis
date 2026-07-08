@@ -10,7 +10,8 @@ RUN pip install --no-cache-dir fastapi==0.111.0 uvicorn==0.30.1 pydantic==2.7.4 
     scipy==1.13.1 nltk==3.8.1 tensorflow==2.16.1 keras==3.3.3 \
     transformers==4.41.2 joblib==1.4.2 && \
     pip install --no-cache-dir torch==2.3.1 --index-url https://download.pytorch.org/whl/cpu && \
-    pip install --no-cache-dir tf-keras
+    pip install --no-cache-dir tf-keras && \
+    python -c "import tf_keras; print('tf-keras OK')"
 
 RUN python -c "import nltk; nltk.download('stopwords', quiet=True); nltk.download('punkt', quiet=True); nltk.download('wordnet', quiet=True)"
 

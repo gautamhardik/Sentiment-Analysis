@@ -112,11 +112,13 @@ class ModelManager:
                         continue
                 if not loaded:
                     raise RuntimeError("Could not load LSTM model with any backend")
-                
-                @tf.function(reduce_retracing=True)
-                def fast_predict(x):
-                    return self.lstm_model(x, training=False)
-                self.lstm_fast_predict = fast_predict
+                if hasattr(self.lstm_model, "signatures") and "serving_default" in self.lstm_model.signatures:
+                    self.lstm_fast_predict = self.lstm_model.signatures["serving_default"]
+                else:
+                    @tf.function(reduce_retracing=True)
+                    def fast_predict(x):
+                        return self.lstm_model(x, training=False)
+                    self.lstm_fast_predict = fast_predict
                 
                 with open(tok_path, "rb") as f:
                     self.lstm_tokenizer = pickle.load(f)
