@@ -35,6 +35,9 @@ async def predict(request: PredictRequest):
         nonlocal pos_count, neg_count, total_count
         try:
             result = predict_fn(text)
+            if result is None:
+                errors.append(f"{model_key}: returned None")
+                return
             models_result[model_key] = result
             total_count += 1
             if result.label == "Positive":
@@ -42,7 +45,8 @@ async def predict(request: PredictRequest):
             else:
                 neg_count += 1
         except Exception as e:
-            errors.append(f"{model_key}: {str(e)}")
+            import traceback
+            errors.append(f"{model_key}: {str(e)}\n{traceback.format_exc()}")
     
     if "lr" in request.models:
         try_predict("lr", predict_lr, request.text)
