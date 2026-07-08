@@ -373,9 +373,9 @@ textarea:focus {
     height: 3px;
 }
 
-#criticLr::before { background-color: #7a9e7e; } /* Sage */
-#criticLstm::before { background-color: #9b2226; } /* Burgundy */
-#criticBert::before { background-color: var(--gold); } /* Gold */
+#criticLr::before { background-color: var(--gold); }
+#criticLstm::before { background-color: var(--gold); }
+#criticBert::before { background-color: var(--gold); }
 
 .critic-card:hover {
     border-color: var(--gold);
@@ -401,9 +401,9 @@ textarea:focus {
     letter-spacing: 1px;
 }
 
-#criticLr .model-type { color: #7a9e7e; }
-#criticLstm .model-type { color: #e5383b; } /* Lighter burgundy for text */
-#criticBert .model-type { color: #facc15; }
+#criticLr .model-type { color: var(--gold); }
+#criticLstm .model-type { color: var(--gold); }
+#criticBert .model-type { color: var(--gold); }
 
 .critic-body {
     padding: 1.5rem;
