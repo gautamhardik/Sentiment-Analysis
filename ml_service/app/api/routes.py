@@ -70,14 +70,15 @@ async def predict(request: PredictRequest):
 async def health_check() -> Dict[str, Any]:
     return {
         "status": "healthy",
-        "backend": False, # Gateway sets this to true later
+        "backend": False,
         "ml_service": True,
-        "database": False, # Gateway sets this to true later
+        "database": False,
         "models_loaded": {
             "logistic_regression": model_manager.models_loaded.get("logistic_regression", False),
             "lstm": model_manager.models_loaded.get("lstm", False),
             "bert": model_manager.models_loaded.get("bert", False)
         },
+        "load_errors": model_manager.load_errors,
         "version": "1.0.0"
     }
 

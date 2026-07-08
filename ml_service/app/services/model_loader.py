@@ -34,6 +34,7 @@ class ModelManager:
             "lstm": False,
             "bert": False
         }
+        self.load_errors = {}
         
         # LR specific
         self.lr_model = None
@@ -89,6 +90,7 @@ class ModelManager:
                 self.lr_model = joblib.load(model_path)
                 self.models_loaded["logistic_regression"] = True
         except Exception as e:
+            self.load_errors["lr"] = str(e)
             print(f"Failed to load Logistic Regression: {e}")
 
     def load_lstm(self):
@@ -126,6 +128,7 @@ class ModelManager:
                     self.lstm_config = pickle.load(f)
                 self.models_loaded["lstm"] = True
         except Exception as e:
+            self.load_errors["lstm"] = str(e)
             print(f"Failed to load LSTM: {e}")
 
     def load_bert(self):
@@ -143,6 +146,7 @@ class ModelManager:
                         
                 self.models_loaded["bert"] = True
         except Exception as e:
+            self.load_errors["bert"] = str(e)
             print(f"Failed to load BERT: {e}")
 
 model_manager = ModelManager()
