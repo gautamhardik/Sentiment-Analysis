@@ -20,7 +20,7 @@ RUN cd backend && npm install
 
 COPY . .
 
-RUN cd backend && npx prisma generate && touch prisma/dev.db
+RUN cd backend && npx prisma db push --skip-generate && node prisma/seed.js
 
 ENV PORT=4000
 ENV ML_SERVICE_URL=http://localhost:8000
