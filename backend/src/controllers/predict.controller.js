@@ -66,6 +66,7 @@ const getHealth = async (req, res, next) => {
         lstm: false,
         bert: false
       },
+      load_errors: mlHealth?.load_errors || {},
       version: "1.0.0"
     });
   } catch (error) {
