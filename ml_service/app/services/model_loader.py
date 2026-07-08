@@ -99,12 +99,6 @@ class ModelManager:
             cfg_path = os.path.join(settings.DATA_DIR, "config.pkl")
             
             if os.path.exists(model_path) and os.path.exists(tok_path) and os.path.exists(cfg_path):
-                with open(model_path, "rb") as f:
-                    header = f.read(8)
-                    is_h5 = header[0:2] == b"\x89H"
-                    is_zip = header[0:2] == b"PK"
-                    
-                loaded = False
                 last_lstm_error = ""
                 
                 for loader_fn, name in [
@@ -114,14 +108,33 @@ class ModelManager:
                 ]:
                     try:
                         self.lstm_model = loader_fn(model_path)
-                        loaded = True
+                        self.models_loaded["lstm"] = True
                         break
                     except Exception as e:
                         last_lstm_error = f"{name}: {str(e)}"
                         continue
                 
-                if not loaded:
-                    raise RuntimeError(f"Could not load LSTM model ({'h5' if is_h5 else 'zip'}): {last_lstm_error}")
+                if not self.models_loaded["lstm"]:
+                    try:
+                        import keras.saving
+                        rebuilt = keras.models.Sequential([
+                            keras.layers.InputLayer(batch_shape=[None, 300]),
+                            keras.layers.Embedding(50000, 128, mask_zero=True),
+                            keras.layers.SpatialDropout1D(0.2),
+                            keras.layers.Bidirectional(keras.layers.LSTM(64)),
+                            keras.layers.Dropout(0.5),
+                            keras.layers.Dense(1, activation="sigmoid"),
+                        ])
+                        rebuilt.load_weights(model_path)
+                        self.lstm_model = rebuilt
+                        self.models_loaded["lstm"] = True
+                        last_lstm_error = ""
+                    except Exception as e:
+                        last_lstm_error = f"rebuild: {str(e)}"
+                
+                if not self.models_loaded["lstm"]:
+                    raise RuntimeError(f"Could not load LSTM model: {last_lstm_error}")
+                
                 if hasattr(self.lstm_model, "signatures") and "serving_default" in self.lstm_model.signatures:
                     self.lstm_fast_predict = self.lstm_model.signatures["serving_default"]
                 else:
@@ -134,7 +147,6 @@ class ModelManager:
                     self.lstm_tokenizer = pickle.load(f)
                 with open(cfg_path, "rb") as f:
                     self.lstm_config = pickle.load(f)
-                self.models_loaded["lstm"] = True
         except Exception as e:
             self.load_errors["lstm"] = str(e)
             print(f"Failed to load LSTM: {e}")
