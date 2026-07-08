@@ -101,19 +101,23 @@ class ModelManager:
             
             if os.path.exists(model_path) and os.path.exists(tok_path) and os.path.exists(cfg_path):
                 loaded = False
-                for loader_fn in [
-                    lambda p: tf.keras.models.load_model(p, compile=False),
-                    lambda p: keras.models.load_model(p, compile=False),
-                    lambda p: tf.saved_model.load(p),
+                last_lstm_error = ""
+                for loader_fn, name in [
+                    (lambda p: tf.keras.models.load_model(p, compile=False), "tf.keras"),
+                    (lambda p: keras.models.load_model(p, compile=False), "keras"),
                 ]:
                     try:
+                        print(f"Trying {name} to load LSTM...")
                         self.lstm_model = loader_fn(model_path)
                         loaded = True
+                        print(f"LSTM loaded with {name}")
                         break
-                    except Exception:
+                    except Exception as e:
+                        print(f"LSTM {name} failed: {e}")
+                        last_lstm_error = f"{name}: {str(e)}"
                         continue
                 if not loaded:
-                    raise RuntimeError("Could not load LSTM model with any backend")
+                    raise RuntimeError(f"Could not load LSTM model: {last_lstm_error}")
                 if hasattr(self.lstm_model, "signatures") and "serving_default" in self.lstm_model.signatures:
                     self.lstm_fast_predict = self.lstm_model.signatures["serving_default"]
                 else:
