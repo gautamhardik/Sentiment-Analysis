@@ -1,12 +1,3 @@
----
-title: The Screening Room
-emoji: 🎬
-colorFrom: blue
-colorTo: purple
-sdk: docker
-pinned: false
----
-
 <div align="center">
 
 # 🎬 The Screening Room
