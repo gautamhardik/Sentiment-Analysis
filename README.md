@@ -295,7 +295,13 @@ High numbers invite skepticism — rightfully so. Here's why this isn't overfitt
 
 Cinema-themed ticket-style input with "Featured Screenings" sample reviews tagged by category (positive, negative, mixed, sarcasm, negation, complex context) and difficulty level.
 
-<img src="assets/landing-page.png" alt="The Screening Room landing page with Featured Screenings" width="100%">
+<img src="assets/hero-landing.png" alt="The Screening Room landing page with ticket input" width="100%">
+
+### Featured Screenings
+
+Eight pre-built sample reviews spanning all sentiment categories — click "Use This Review" to load any sample into the textarea instantly.
+
+<img src="assets/landing-page.png" alt="Featured Screenings sample review cards" width="100%">
 
 ### Prediction Results
 
@@ -303,19 +309,13 @@ Overall verdict banner with majority vote and agreement ratio; three critic card
 
 <img src="assets/prediction-results.png" alt="Prediction results with three-model comparison" width="100%">
 
-### Inside the Screening Room
+### A Real Prediction Example
 
-Accuracy/precision/recall/F1 per model, dataset provenance, technology stack, and architecture diagram.
+> *"The movie wasn't bad, but it wasn't good either. I can't say I disliked it, but I also can't say I liked it."*
 
-<img src="assets/inside-screening-room.png" alt="Model metrics dashboard and architecture panel" width="100%">
+All three models correctly classified this as negative (3/3 agreement), but with very different confidence — Logistic Regression (83.8%), Bi-LSTM (71.1%), and BERT (98.1%). The LR explainability panel surfaces the key words driving its decision: "cannot say", "liked" as positive cues versus "either", "movie", "bad" as negative cues.
 
-### A Representative Test Case
-
-> *"A visually stunning masterpiece that falls completely flat in the final act. The cinematography is brilliant, but the terrible script and rushed ending ruined the entire movie for me."*
-
-All three models correctly classified this as negative, but with very different confidence — Logistic Regression (76.4%) and Bi-LSTM (67.2%) landed close to the decision boundary, while BERT (99.0%) confidently weighted the negative pivot over the earlier praise. This is the kind of disagreement the project is built to surface.
-
-<img src="assets/model-disagreement-example.png" alt="Example of model disagreement on a mixed-sentiment review" width="100%">
+<img src="assets/model-disagreement-example.png" alt="Three-model comparison with confidence scores and explainability" width="100%">
 
 ---
 
