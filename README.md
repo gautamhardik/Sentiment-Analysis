@@ -25,6 +25,10 @@ pinned: false
 
 **[🚀 Live Demo](https://hardik-25-sentiment-analysis.hf.space/)** · **[📊 Results](#-experimental-results)** · **[🏗️ Architecture](#%EF%B8%8F-system-architecture)** · **[🧠 Pipeline](#-machine-learning-pipeline)**
 
+<br>
+
+<img src="assets/hero-landing.png" alt="The Screening Room landing page" width="100%">
+
 
 
 https://github.com/user-attachments/assets/5c47cc05-40f5-4e9a-ad10-e32d959c6cc8
@@ -294,8 +298,6 @@ High numbers invite skepticism — rightfully so. Here's why this isn't overfitt
 ### Landing Page
 
 Cinema-themed ticket-style input with "Featured Screenings" sample reviews tagged by category (positive, negative, mixed, sarcasm, negation, complex context) and difficulty level.
-
-<img src="assets/hero-landing.png" alt="The Screening Room landing page with ticket input" width="100%">
 
 ### Featured Screenings
 
