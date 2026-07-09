@@ -18,7 +18,7 @@
 
 <br>
 
-<img src="assets/hero-landing.png" alt="The Screening Room landing page" width="100%">
+
 
 
 
